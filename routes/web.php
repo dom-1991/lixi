@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    abort(404);
+    echo "Hello World!";
 });
 
 Route::get('privacy', function () {
