@@ -9,7 +9,7 @@
            command: |
              curl ${TELEGRAM_WEBHOOK}"/sendMessage?chat_id="${TELEGRAM_GROUPID}"&text=🚘%20Deployment%20test.tabu1992.dev%20start%0A%20🔑%20${CIRCLE_BRANCH}%0A%20👨‍🦱 ${CIRCLE_USERNAME}"
            name: Telegram - Start Deploy
-  start_after:
+   start_after:
     docker:
       - image: 'cimg/node:16.11.1'
     steps:
