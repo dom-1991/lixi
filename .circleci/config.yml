@@ -9,14 +9,17 @@
            command: |
              curl ${TELEGRAM_WEBHOOK}"/sendMessage?chat_id="${TELEGRAM_GROUPID}"&text=🚘%20Deployment%20test.tabu1992.dev%20start%0A%20🔑%20${CIRCLE_BRANCH}%0A%20👨‍🦱 ${CIRCLE_USERNAME}"
            name: Telegram - Start Deploy
-   after_start:
-    docker:
-      - image: 'cimg/node:16.11.1'
-    steps:
-      - run:
+   deploy_production:
+     machine:
+       enabled: true
+     steps:
+       - run:
+           name: Deploy Over SSH
            command: |
-             curl ${TELEGRAM_WEBHOOK}"/sendMessage?chat_id="${TELEGRAM_GROUPID}"&text=🚘%20Deployment%20test.tabu1992.dev%20after%20start%0A%20🔑%20${CIRCLE_BRANCH}%0A%20👨‍🦱 ${CIRCLE_USERNAME}"
-           name: Telegram - Start Deploy
+             ssh root@103.130.213.12 "cd /var/www/html/lixi &&
+             git checkout -f  &&
+             git pull origin master"
+           no_output_timeout: 30s
    end:
     docker:
       - image: 'cimg/node:16.11.1'
@@ -26,7 +29,7 @@
              curl ${TELEGRAM_WEBHOOK}"/sendMessage?chat_id="${TELEGRAM_GROUPID}"&text=✅%20Deploy%20successfully!!!"
            name: Telegram - End Deploy
            no_output_timeout: 10s
-   deploy:
+   deploy_dev:
      machine:
        enabled: true
      steps:
@@ -47,13 +50,18 @@
    deploy:
      jobs:
        - start
-       - after_start:
+       - deploy_dev:
            requires:
              - start
-       - deploy:
+           filters:
+             branches:
+               only: master # only deploy master branch
+       - deploy_production:
+           requires:
+             - start
            filters:
              branches:
                only: master # only deploy master branch
        - end:
            requires:
-             - deploy
+             - deploy_dev
