@@ -47,7 +47,7 @@
    deploy:
      jobs:
        - start
-       - after_start
+       - after_start:
            requires:
              - start
        - deploy:
